@@ -1,13 +1,7 @@
-import React from 'react';
-import LogInPage from '../src/LoginPage/LogInPage';
-import './App.css';
-
-function App() {
-  return (
-    <div id="app">
-     <LogInPage/>
-    </div>
-  );
+import React, { PropTypes } from "react";
+class App extends React.Component {
+  render() {
+    return <div>{this.props.children}</div>;
+  }
 }
-
 export default App;

@@ -1,7 +1,7 @@
 import * as types from '../_constants/actiontypes';
 
-//import {browserHistory} from 'react-router';
-
+import {browserHistory} from 'react-router';
+import auth from '../auth/authentcator'
 export function loginUser(credentials) {
   return function(dispatch) {
     dispatch(setLoginPending(true));
@@ -13,11 +13,14 @@ export function loginUser(credentials) {
 
         dispatch(setLoginSuccess(true));
         dispatch(setLoginPending(false));
+        window.sessionStorage.setItem('userloggedin',true);
+        browserHistory.push('/employeeslist')
         }
 
     else{
-        dispatch(setLoginPending(false));
+      dispatch(setLoginPending(false));
       dispatch(setLoginError("Invalid email and password"));
+      browserHistory.push('/login')
     }
    
   };
@@ -42,5 +45,9 @@ function setLoginError(isLoginError){
     type: types.SET_LOGIN_ERROR,
     isLoginError
   }
+}
+export function logOutUser() {
+  auth.logOut();
+  return {type: types.LOG_OUT}
 }
 

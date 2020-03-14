@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+
 class Homepage extends Component {
     constructor(props) {
       super(props);
@@ -28,7 +29,8 @@ renderUsers = () =>{
 }
 
 logout = () =>{
-    window.location.reload()
+    sessionStorage.removeItem('userloggedin');
+    window.location.reload();
 }
 
 render(){
@@ -45,16 +47,16 @@ render(){
 	))
 	
 	return (
-        <div> <h2>Employees List</h2>
-		<table className="userlist">
+        <div style={{textAlign:'center'}}> <h2>Employees List</h2>
+		<table className="userlist" >
 			<thead>
 				<tr>
-					<th style={{color:'white', backgroundColor:'#4ecdc4' ,width :'5%' }}>SLNo</th>
-					<th style={{color:'white', backgroundColor:'#4ecdc4',width:'20%'}}>Name</th>
-					<th style={{color:'white', backgroundColor:'#4ecdc4',width :'10%' }}> Age</th>
-					<th style={{color:'white', backgroundColor:'#4ecdc4',width :'10%' }}>Gender</th>
-                    <th style={{color:'white', backgroundColor:'#4ecdc4',width :'25%' }}> Email</th>
-					<th style={{color:'white', backgroundColor:'#4ecdc4',width :'25%' }}>Phone Num</th>
+					<th style={{width :'5%' }}>SLNo</th>
+					<th style={{width:'20%'}}>Name</th>
+					<th style={{width :'10%' }}> Age</th>
+					<th style={{width :'10%' }}>Gender</th>
+                    <th style={{width :'25%' }}> Email</th>
+					<th style={{width :'25%' }}>Phone Num</th>
 				</tr>
 			</thead>
 			{userslist}
