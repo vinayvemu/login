@@ -5,7 +5,7 @@ import "./Header.scss"
 
 class DefaultLayout extends Component {
     render() {
-      
+      let current = window.sessionStorage.getItem("currentuser")
             return (
                 <div className="mainscreen">
                     <Header />
@@ -14,6 +14,7 @@ class DefaultLayout extends Component {
                             {this.props.children}
                         </div>
                     </section>
+                    <div style={{textAlign:'center',color:"#fff"}}>  <h5>({current})</h5></div>
                 </div>
             )
             }

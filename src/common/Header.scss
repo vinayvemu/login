@@ -65,9 +65,22 @@
       .iconBuddy {
 		width: 20px;
 		height: 20px;
-		margin-top: 4px;
-	}
-    
+        margin-top: 4px;
+        
+        
+    }
+   
+    .c-userController{
+        .dropdown-menu{
+            display: none;
+        }
+    }
+   
+    .c-userController:hover{
+        .dropdown-menu{
+            display: initial;
+        }
+    }
     
     .am-top-header .am-toggle-right-sidebar .icon {
         font-size: 26px;
@@ -188,7 +201,25 @@ button {
 
 
 
+/////////////user controller
 
+.c-userController {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+.c-userController>li{
+    display: inline-block;
+    margin-right: 20px;
+}
 
+@media (max-width: 768px){
+.c-userController>li{
+  width: 100%;
+}
+
+}
 
     
