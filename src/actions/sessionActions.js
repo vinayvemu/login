@@ -37,7 +37,7 @@ export function loginUser(credentials) {
        }
     }
     else{
-      alertify.notify("Does not Find any account with that mail...Try Creating New Mail..", 'error', 100);
+      alertify.notify("Does not Find any account with that mail...Try Creating New Mail..", 'error', 5);
  
       dispatch(setLoginPending(false));
       dispatch(setLoginSuccess(false));
