@@ -1,80 +1,259 @@
 import React, { Component } from 'react';
+import DefaultLayout from '../common/DefaultLayout'
+
+import classnames from 'classnames';
+import alertify from 'alertifyjs';
+import "../LoginPage/alertifystyling.scss"
 
 
 class Homepage extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        users:[]
+        Allemails:[],
+        composenewmail:{
+            from:"",
+            to:"",
+            subject:"",
+            message:"",
+            createddate:""
+        },
+        errors:{},
+        showcompose:false,
+        showinbox:true,
+        showsentitems:false,
+        currentuser:""
     }
 }
 
 componentDidMount () {
-    this.renderUsers();
+    let currentuser = window.sessionStorage.getItem("currentuser" || "")
+    let newmail =  this.state.composenewmail
+    newmail.from = currentuser;
+    let Allemails =[];
+    let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails" || "[]"))
+    Allemails = existedmails;
+    this.setState({currentuser:currentuser,composenewmail:newmail,Allemails:Allemails})
+   this.updatestate()
 }
     
-renderUsers = () =>{
-    let users = this.state.users;
-  users  = [{ 
-        "id":1, "name":"test1", "age" : "11", "gender":"male", "email" : "test1@gmail.com", "phoneNo" : "9415346313" }, { "id" : 2, 
-        "name":"test2", "age" : "12", "gender":"male", "email" : "test2@gmail.com", "phoneNo" : "9415346314" }, { "id":3, 
-        "name":"test3", 
-        "age" : "13", "gender":"male", "email" : "test3@gmail.com", "phoneNo" : "9415346315" }, { "id":4, 
-        "name":"test4", "age" : "14", "gender":"male", "email" : "test4@gmail.com", "phoneNo" : "9415346316" }, { "id":5, 
-        "name":"test5", "age" : "15", "gender":"male", "email" : "test5@gmail.com", "phoneNo" : "9415346317" }, { "id":6, 
-        "name":"test6", "age" : "16", "gender":"male", "email" : "test6@gmail.com", "phoneNo" : "9415346318" } 
-        ] 
-        this.setState({users:users})
-        
+updatestate = () =>{
+    let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails"))
+   
+    this.setState({Allemails:existedmails})
 }
+
 
 logout = () =>{
     sessionStorage.removeItem('userloggedin');
+    alertify.notify("Logged Out successfully...", 'success', 5);
     window.location.reload();
 }
 
+onSubmit = () =>{
+    let newmail = this.state.composenewmail
+    let currentuser = this.state.currentuser
+    let Allemails = JSON.parse(window.sessionStorage.getItem("Allemails" || []))
+    let isValid = this.handlevalidation ();
+    if(isValid){
+    newmail.from = currentuser
+    Allemails.push(newmail)
+    window.sessionStorage.setItem("Allemails" , JSON.stringify(Allemails))
+  
+    this.setState({
+        showcompose:false,
+        showinbox:true,
+        showsentitems:false
+    })
+    alertify.notify("Sent successfully...", 'success', 5);
+    this.updatestate();
+    }
+    
+}
+handlevalidation = () =>{
+    let composenewmail = this.state.composenewmail;
+    let errors = {};
+    if (composenewmail.to === '') errors.to = "To mail address can't be empty";
+    if (composenewmail.subject === '') errors.subject = "subject can't be empty";
+    if (composenewmail.message === '') errors.message = "message can't be empty";
+    this.setState({ errors});
+   return  Object.keys(errors).length === 0;
+
+}
+close = () =>{
+    this.setState({
+        showcompose:false
+    })
+}
+openComposeMail =() =>{
+    this.setState({
+        showcompose:true,
+        showinbox:false,
+        showsentitems:false,
+    })
+}
+openInboxMail = () =>{
+    this.setState({
+        showcompose:false,
+        showinbox:true,
+        showsentitems:false,
+    })
+}
+openSentMail = () =>{
+    this.setState({
+        showcompose:false,
+        showinbox:false,
+        showsentitems:true,
+    })
+}
+
+onChange = (e)=>{
+    
+    let errors = Object.assign({}, this.state.errors);
+    delete errors[e.target.name];
+    this.setState({ errors });
+
+    let field = e.target.name;
+    let composenewmail = this.state.composenewmail;
+
+    composenewmail[field] = e.target.value;
+
+    //set and return composenewmail states
+    return this.setState({ composenewmail: composenewmail });
+  }
+
+  replyMail =(item) =>{
+    
+    let newmail= Object.assign({},item);
+    let replyMaildata = Object.assign({},newmail)
+    replyMaildata.from = newmail.to;
+    replyMaildata.to = newmail.from;
+    replyMaildata.message = "";
+    this.setState({composenewmail:replyMaildata})
+    this.openComposeMail();
+  }
 render(){
-	var userslist = this.state.users.map((item, i) => (
-		<tr key={i} className="userlistitem" style={{textAlign:"center"}}>
-			<td style={{width :'5%' }} >{item.id}</td>
-			<td style={{width :'20%' }}>{item.name}</td>
-			<td style={{width :'10%' }}>{item.age}</td>
-            <td style={{width :'10%' }}>{item.gender}</td>
-            <td style={{width :'25%' }}>{item.email}</td>
-            <td style={{width :'25%' }}>{item.phoneNo}</td> 
-		</tr>
-		
-	))
+console.log(this.state)
+
+    let {composenewmail,showcompose,showinbox,showsentitems,errors,Allemails,currentuser} = this.state;
+   let that = this;
+    let inboxitemslist = Allemails.map(function(o,i){
+        if(o.to == currentuser  && o.to !== ""){
+            return(
+                <tr key={i}>
+                    <td> {o.from}</td>
+                    <td> {o.subject}</td>
+                    <td> {o.message}</td>
+                    <td> {o.createddate}</td>
+                    <td>
+                    <button
+                     onClick={()=>that.replyMail(o)}>Replay</button>
+                    </td>
+                </tr>
+            )
+        }
+    })
+    let sentitemslist = Allemails.map(function(o,i){
+        if(o.from == currentuser && o.to !== ""){
+            return(
+                <tr key={i}>
+                    <td> {o.to}</td>
+                    <td > {o.subject}</td>
+                    <td > {o.message}</td>
+                    <td > {o.createddate}</td>
+                </tr>
+            )
+        }
+    })
+    console.log(sentitemslist)
 	
 	return (
-        <div style={{textAlign:'center'}}> <h2>Employees List</h2>
-		<table className="userlist" >
-			<thead>
-				<tr>
-					<th style={{width :'5%' }}>SLNo</th>
-					<th style={{width:'20%'}}>Name</th>
-					<th style={{width :'10%' }}> Age</th>
-					<th style={{width :'10%' }}>Gender</th>
-                    <th style={{width :'25%' }}> Email</th>
-					<th style={{width :'25%' }}>Phone Num</th>
-				</tr>
-			</thead>
-			{userslist}
-            <tfoot>
-            <div className="form-group login-submit">
-                      <input
-                        type="submit"
-                        value="LOGOUT"
-                        label ="LOGOUT"
-                        className={'btn-primary btn-lg'}
-                        onClick={this.logout}
-                       />
+       
+		<DefaultLayout>
+            <div style={{textAlign:'center',color:"#fff"}}> <h2>{!showcompose ?( showinbox?"Inbox Emails":"Sent Emails"):"New Email"} </h2>
+            <div id="main" class="clear">
+            <div id="sidebar">
+              
+                <button className="compose" onClick = {this.openComposeMail}>Compose</button>
+                <button className="inbox" onClick = {this.openInboxMail}>Inbox</button>
+                <button className="sent" onClick = {this.openSentMail}>Sent</button>
+               
+            </div>
+        <div id="page-wrap">
+        {showcompose &&
+        <div className="composemail">
+        <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.to})}   data-validate={errors.to}>
+            <input
+                className="mailinput"
+                type="text"
+                name="to"
+                value={composenewmail.to}
+                onChange={this.onChange}
+                placeholder="To Address " />
+                <span className="symbol-input100">
+                    <i className="fa fa-envelope" aria-hidden="true"></i>
+                  </span>
+           
+            </div>
+            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.subject})}   data-validate={errors.subject}>
+            <input
+                className="mailinput"
+                type="text"
+                name="subject"
+                value={composenewmail.subject}
+                onChange={this.onChange}
+                placeholder="subject" />
 
-                    </div>
-            </tfoot>
-			
-		</table>
+            </div>
+            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.message})}   data-validate={errors.message}>
+            <textarea
+                className="mailinputmessage"
+                type="text"
+                name="message"
+                value={composenewmail.message}
+                onChange={this.onChange}
+                placeholder="message" />
+                <span className="symbol-input100">
+                <i className="fa fa-commenting-o" aria-hidden="true"></i>
+                </span>
+            </div>
+            <div className="btn-row">
+
+                <button className="btn-primary" onClick={this.onSubmit}>Submit</button>
+                <button className="btn-cancel" onClick={this.close}>Cancel</button>
+           </div>
+            </div>
+        }
+
+        {!showcompose &&
+        <table className="mailview" >
+            <thead>
+                <tr>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"20%"}}>{showinbox?"From":"To"}</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"15%"}}>Subject</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"35%"}}>Message</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"25%"}}>Date</th>
+                    {showinbox && <th style={{color:'white', backgroundColor:'#4ecdc4',width:"5%"}}>Action</th>}
+                    
+                </tr>
+            </thead>
+            {showinbox &&
+            <tbody>
+                {inboxitemslist}
+            </tbody>
+            }
+            {showsentitems &&
+                <tbody>
+                    {sentitemslist}
+                </tbody>
+            }           
+        </table>
+        }
+            
         </div>
+        </div>
+        </div>
+        </DefaultLayout>
     )
 }
 }
