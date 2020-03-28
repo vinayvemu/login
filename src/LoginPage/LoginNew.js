@@ -242,6 +242,7 @@ class LogInPage extends React.Component {
     if (isValid) {
      
         let checkExistuser = users.filter(x=>x.Email == createaccount.Email )
+        console.log(checkExistuser)
         if(checkExistuser.length == 0){
           
         users.push(createaccount)
@@ -362,7 +363,7 @@ class LogInPage extends React.Component {
               </form>
 
             </div>
-            <div className="panel-bottom"><span>Test Project @ Doodleblue</span></div>
+            <div className="panel-bottom"><span>Test Project @ SpiceBlue</span></div>
 
           </div>}
         {showContactus == true && showResetpassword == false &&
@@ -452,7 +453,7 @@ class LogInPage extends React.Component {
                 </div>
               </form>
             </div>
-            <div className="panel-bottom"><span>Test Project @ Doodleblue</span></div>
+            <div className="panel-bottom"><span>Test Project @ SpiceBlue</span></div>
           </div>
         }
         {showContactus == false && showResetpassword == true &&
@@ -503,7 +504,7 @@ class LogInPage extends React.Component {
                 </div>
               </form>
             </div>
-            <div className="panel-bottom"><span>Test Project @ Doodleblue</span></div>
+            <div className="panel-bottom"><span>Test Project @ SpiceBlue</span></div>
           </div>
         }
       </div>
