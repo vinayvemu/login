@@ -67,6 +67,7 @@ onSubmit = () =>{
     })
     alertify.notify("Sent successfully...", 'success', 5);
     this.updatestate();
+    this.close();
     }
     
 }
@@ -81,7 +82,15 @@ handlevalidation = () =>{
 
 }
 close = () =>{
+    let composenewmail ={
+        from:"",
+        to:"",
+        subject:"",
+        message:"",
+        createddate:""
+    }
     this.setState({
+        composenewmail:composenewmail,
         showcompose:false
     })
 }
@@ -147,7 +156,7 @@ console.log(this.state)
                     <td> {o.createddate}</td>
                     <td>
                     <button
-                     onClick={()=>that.replyMail(o)}>Replay</button>
+                     onClick={()=>that.replyMail(o)}>Reply</button>
                     </td>
                 </tr>
             )
@@ -157,7 +166,7 @@ console.log(this.state)
         if(o.from == currentuser && o.to !== ""){
             return(
                 <tr key={i}>
-                    <td> {o.to}</td>
+                    <td>  {o.to}</td>
                     <td > {o.subject}</td>
                     <td > {o.message}</td>
                     <td > {o.createddate}</td>
@@ -230,7 +239,7 @@ console.log(this.state)
             <thead>
                 <tr>
                     <th style={{color:'white', backgroundColor:'#4ecdc4',width:"20%"}}>{showinbox?"From":"To"}</th>
-                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"15%"}}>Subject</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width: "15%"}}>Subject</th>
                     <th style={{color:'white', backgroundColor:'#4ecdc4',width:"35%"}}>Message</th>
                     <th style={{color:'white', backgroundColor:'#4ecdc4',width:"25%"}}>Date</th>
                     {showinbox && <th style={{color:'white', backgroundColor:'#4ecdc4',width:"5%"}}>Action</th>}
