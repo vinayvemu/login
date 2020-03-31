@@ -3,7 +3,15 @@ import DefaultLayout from '../common/DefaultLayout'
 
 import classnames from 'classnames';
 import alertify from 'alertifyjs';
+import axios from 'axios'
 import "../LoginPage/alertifystyling.scss"
+
+const API_URL = 'https://api.close.com';
+const headers = {
+    'Content-Type': 'application/json',
+    'api_key': 'api_45gYXpT0EZ8N6bXU8aMqxg.6gk65Pw4QohT18xx2NF3Yi'
+  }
+
 
 
 class Homepage extends Component {
@@ -34,7 +42,8 @@ componentDidMount () {
     let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails" || "[]"))
     Allemails = existedmails;
     this.setState({currentuser:currentuser,composenewmail:newmail,Allemails:Allemails})
-   this.updatestate()
+   this.updatestate();
+   this.getAllEmails();
 }
     
 updatestate = () =>{
@@ -49,6 +58,54 @@ logout = () =>{
     alertify.notify("Logged Out successfully...", 'success', 5);
     window.location.reload();
 }
+
+
+
+getAllEmails = () =>{
+    let that = this;
+          
+    var reqQuery =
+    {
+        
+      
+    }
+    const url = `${API_URL}/api/v1/email_template/1234/json`;
+      axios.get(url,reqQuery,{headers:headers})
+      .then((response) => {
+
+            
+        console.log(response)
+    })
+  
+
+}
+
+
+ onSubmitemail = () =>{
+         let that = this;
+          
+          var reqQuery =
+          {
+              
+                "name": "inbound 1",
+                "subject": "test inbound subject",
+                "body": "test inbound body of an email.",
+                "is_shared": false
+            
+          }
+          const url = `${API_URL}/api/v1/email_template/json`;
+            axios.post(url,reqQuery,{headers:headers})
+            .then((response) => {
+
+            
+                console.log(response)
+            })
+        
+        }
+
+
+
+
 
 onSubmit = () =>{
     let newmail = this.state.composenewmail
@@ -228,7 +285,7 @@ console.log(this.state)
             </div>
             <div className="btn-row">
 
-                <button className="btn-primary" onClick={this.onSubmit}>Submit</button>
+                <button className="btn-primary" onClick={this.onSubmitemail}>Submit</button>
                 <button className="btn-cancel" onClick={this.close}>Cancel</button>
            </div>
             </div>
