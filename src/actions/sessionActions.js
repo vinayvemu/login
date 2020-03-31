@@ -28,7 +28,7 @@ export function loginUser(credentials) {
         Allemails = existedmails;
         console.log(Allemails)
         window.sessionStorage.setItem("Allemails", JSON.stringify(Allemails));
-        browserHistory.push('/Homepage')
+        browserHistory.push('/Chooseurapp')
       }
       else{
         dispatch(setLoginPending(false));

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import DefaultLayout from '../common/DefaultLayout'
-
+import {browserHistory} from 'react-router';
 import classnames from 'classnames';
 import alertify from 'alertifyjs';
 import "../LoginPage/alertifystyling.scss"
+
+
 
 
 class UsersList extends Component {
@@ -15,31 +17,29 @@ class UsersList extends Component {
             Name:"",
             Email:"",
             Password:"",
-            ConfirmPassword:""
+            ConfirmPassword:"",
+            isDeleted:false,
         },
+        isUpdate:false,
         errors:{},
-        showcompose:false,
-        showinbox:true,
-        showsentitems:false,
+        showupdate:false,
+        showdeletedusers:false,
+        showuserslist:true,
         currentuser:""
     }
 }
 
 componentDidMount () {
-    let currentuser = window.sessionStorage.getItem("currentuser" || "")
-    let newmail =  this.state.composenewmail
-    newmail.from = currentuser;
-    let Allemails =[];
-    let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails" || "[]"))
-    Allemails = existedmails;
-    this.setState({currentuser:currentuser,composenewmail:newmail,Allemails:Allemails})
-   this.updatestate()
+   
+    this.updatestate()
 }
     
 updatestate = () =>{
-    let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails"))
+    let currentuser = window.sessionStorage.getItem("currentuser" || "")
+    let Allusers = JSON.parse(window.sessionStorage.getItem("userslist"))
    
-    this.setState({Allemails:existedmails})
+    this.setState({Allusers:Allusers,
+        currentuser:currentuser,})
 }
 
 
@@ -49,69 +49,135 @@ logout = () =>{
     window.location.reload();
 }
 
+
 onSubmit = () =>{
-    let newmail = this.state.composenewmail
-    let currentuser = this.state.currentuser
-    let Allemails = JSON.parse(window.sessionStorage.getItem("Allemails" || []))
+    
+    let createaccount = this.state.createaccount;
+    let Allusers = JSON.parse(window.sessionStorage.getItem("userslist" || []))
     let isValid = this.handlevalidation ();
     if(isValid){
-    newmail.from = currentuser
-    Allemails.push(newmail)
-    window.sessionStorage.setItem("Allemails" , JSON.stringify(Allemails))
+  
+    Allusers.push(createaccount)
+    window.sessionStorage.setItem("userslist" , JSON.stringify(Allusers))
   
     this.setState({
-        showcompose:false,
-        showinbox:true,
-        showsentitems:false
+        showupdate:false,
+        showdeletedusers:false,
+        showuserslist:true,
     })
-    alertify.notify("Sent successfully...", 'success', 5);
+    alertify.notify("User created successfully...", 'success', 5);
+    this.updatestate();
+    this.close();
+    }
+    
+
+}
+
+deleteSelecteduser = (item) =>{
+      
+    let user= Object.assign({},item);
+    let Allusers = JSON.parse(window.sessionStorage.getItem("userslist" || []))
+
+    let userid =user.Email
+    const index = Allusers.map(e => e.Email).indexOf(userid);
+
+    if(index != -1){
+        user.isDeleted = true
+        Allusers[index] =user
+        alertify.notify("User Deleted Succesfully...", 'success', 5);
+       
+    }
+    window.sessionStorage.setItem("userslist" , JSON.stringify(Allusers))
+    this.setState({Allusers:Allusers,showuserslist:true,})
+}
+
+restoreUser =(item) =>{
+    let user= Object.assign({},item);
+    let Allusers = JSON.parse(window.sessionStorage.getItem("userslist" || []))
+
+    let userid =user.Email
+    const index = Allusers.map(e => e.Email).indexOf(userid);
+
+    if(index != -1){
+        user.isDeleted = false
+        Allusers[index] =user
+        alertify.notify("User Restored Succesfully...", 'success', 5);
+       
+    }
+    window.sessionStorage.setItem("userslist" , JSON.stringify(Allusers))
+    this.setState({Allusers:Allusers,})
+
+}
+
+onUpdateUser = () =>{
+    
+    let createaccount = this.state.createaccount;
+    let Allusers = JSON.parse(window.sessionStorage.getItem("userslist" || []))
+    let isValid = this.handlevalidation ();
+    if(isValid){
+    let userid =createaccount.Email
+    const index = Allusers.map(e => e.Email).indexOf(userid);
+
+    if(index != -1){
+        Allusers[index] =createaccount
+    }
+   
+    window.sessionStorage.setItem("userslist" , JSON.stringify(Allusers))
+  
+    this.setState({
+        showupdate:false,
+        showdeletedusers:false,
+        showuserslist:true,
+    })
+    alertify.notify("User created successfully...", 'success', 5);
     this.updatestate();
     this.close();
     }
     
 }
 handlevalidation = () =>{
-    let composenewmail = this.state.composenewmail;
+    let createaccount = this.state.createaccount;
     let errors = {};
-    if (composenewmail.to === '') errors.to = "To mail address can't be empty";
-    if (composenewmail.subject === '') errors.subject = "subject can't be empty";
-    if (composenewmail.message === '') errors.message = "message can't be empty";
+    if (createaccount.Name === '') errors.Name = "Name can't be empty";
+    if (createaccount.Email === '') errors.Email = "Email can't be empty";
+    if (createaccount.Password== '') errors.Password = "Password can't be empty";
+    if (createaccount.ConfirmPassword== '') errors.ConfirmPassword = "Please Enter password";
     this.setState({ errors});
-   return  Object.keys(errors).length === 0;
+    return  Object.keys(errors).length === 0;
 
 }
 close = () =>{
-    let composenewmail ={
-        from:"",
-        to:"",
-        subject:"",
-        message:"",
-        createddate:""
-    }
+   let createaccount ={
+        Name:"",
+        Email:"",
+        Password:"",
+        ConfirmPassword:""
+    };
     this.setState({
-        composenewmail:composenewmail,
-        showcompose:false
+        showuserslist:true,
+        createaccount:createaccount,
+        showupdate:false
     })
 }
-openComposeMail =() =>{
+openUpdateuser =() =>{
     this.setState({
-        showcompose:true,
-        showinbox:false,
-        showsentitems:false,
+        showupdate:true,
+        showdeletedusers:false,
+        showuserslist:false,
     })
 }
-openInboxMail = () =>{
+openUserList = () =>{
     this.setState({
-        showcompose:false,
-        showinbox:true,
-        showsentitems:false,
+        showupdate:false,
+        showdeletedusers:false,
+        showuserslist:true,
     })
 }
-openSentMail = () =>{
+openDeletdUsers = () =>{
     this.setState({
-        showcompose:false,
-        showinbox:false,
-        showsentitems:true,
+        showupdate:false,
+        showdeletedusers:true,
+        showuserslist:false,
     })
 }
 
@@ -122,138 +188,165 @@ onChange = (e)=>{
     this.setState({ errors });
 
     let field = e.target.name;
-    let composenewmail = this.state.composenewmail;
+    let createaccount = this.state.createaccount;
 
-    composenewmail[field] = e.target.value;
+    createaccount[field] = e.target.value;
 
     //set and return composenewmail states
-    return this.setState({ composenewmail: composenewmail });
+    return this.setState({ createaccount: createaccount });
   }
 
-  replyMail =(item) =>{
+  updateUser =(item) =>{
     
-    let newmail= Object.assign({},item);
-    let replyMaildata = Object.assign({},newmail)
-    replyMaildata.from = newmail.to;
-    replyMaildata.to = newmail.from;
-    replyMaildata.message = "";
-    this.setState({composenewmail:replyMaildata})
-    this.openComposeMail();
+    let createaccount= Object.assign({},item);
+    let updateUseraccount = Object.assign({},createaccount)
+  
+    this.setState({createaccount:updateUseraccount,isUpdate:true,})
+    alertify.notify("User Updated Succesfully...", 'success', 5);
+    this.openUpdateuser();
   }
+
+  
+switchApp = () =>{
+    alertify.notify("Choose Your Application...", 'success', 5);
+    browserHistory.push('/Chooseurapp')
+}
+
 render(){
 console.log(this.state)
 
-    let {composenewmail,showcompose,showinbox,showsentitems,errors,Allemails,currentuser} = this.state;
+    let {createaccount,showupdate,currentuser, errors, showdeletedusers,
+        showuserslist,Allusers,isUpdate}= this.state;
    let that = this;
-    let inboxitemslist = Allemails.map(function(o,i){
-        if(o.to == currentuser  && o.to !== ""){
+    let allusers = Allusers.map(function(o,i){
+        if(o.isDeleted == false && o.Name != ""){
             return(
                 <tr key={i}>
-                    <td> {o.from}</td>
-                    <td> {o.subject}</td>
-                    <td> {o.message}</td>
-                    <td> {o.createddate}</td>
-                    <td>
+                    <td> {o.Name}</td>
+                    <td> {o.Email}</td>
+                    <td> {o.Password}</td>
+                    <td> <button
+                     onClick={()=>that.deleteSelecteduser(o)}>Delete</button>
+                     </td>
+                    <td id="btn-row">
                     <button
-                     onClick={()=>that.replyMail(o)}>Reply</button>
+                     onClick={()=>that.updateUser(o)}>Update</button>
+                   
+                   
                     </td>
                 </tr>
             )
         }
     })
-    let sentitemslist = Allemails.map(function(o,i){
-        if(o.from == currentuser && o.to !== ""){
+    let DeletedUsers= Allusers.map(function(o,i){
+        if(o.isDeleted == true  && o.Name != ""){
             return(
                 <tr key={i}>
-                    <td> {o.to}</td>
-                    <td> {o.subject}</td>
-                    <td> {o.message}</td>
+                    <td> {o.Name}</td>
+                    <td> {o.Email}</td>
+                    <td> {o.Password}</td>
                     <td> {o.createddate}</td>
+                    <td>
+                    <button
+                     onClick={()=>that.restoreUser(o)}>Restore</button>
+                    </td>
                 </tr>
             )
         }
     })
 
-    console.log(sentitemslist)
 	
 	return (
        
 		<DefaultLayout>
-            <div style={{textAlign:'center',color:"#fff"}}> <h2>{!showcompose ?( showinbox?"Inbox Emails":"Sent Emails"):"New Email"} </h2>
+            <div style={{textAlign:'center',color:"#fff"}}> <h2>{!showupdate ?(!showdeletedusers ?"All Users":"Deleted Users"):"Update/Create User"} </h2>
             <div id="main" class="clear">
             <div id="sidebar">
               
-                <button className="compose" onClick = {this.openComposeMail}>Compose</button>
-                <button className="inbox" onClick = {this.openInboxMail}>Inbox</button>
-                <button className="sent" onClick = {this.openSentMail}>Sent</button>
+                <button className="compose" onClick = {this.openUpdateuser}>CreateUser</button>
+                <button className="inbox" onClick = {this.openUserList}>All Users</button>
+                <button className="sent" onClick = {this.openDeletdUsers}>Deleted Users</button>
+                <button className="switch" onClick = {this.switchApp}>Switch App</button>
                
             </div>
         <div id="page-wrap">
-        {showcompose &&
+        {showupdate &&
         <div className="composemail">
-        <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.to})}   data-validate={errors.to}>
+        <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.Name})}   data-validate={errors.Name}>
             <input
                 className="mailinput"
                 type="text"
-                name="to"
-                value={composenewmail.to}
+                name="Name"
+                value={createaccount.Name}
                 onChange={this.onChange}
-                placeholder="To Address " />
+                placeholder="Name " />
                 <span className="symbol-input100">
                     <i className="fa fa-envelope" aria-hidden="true"></i>
                   </span>
            
             </div>
-            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.subject})}   data-validate={errors.subject}>
+            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.Email})}   data-validate={errors.Email}>
             <input
                 className="mailinput"
                 type="text"
-                name="subject"
-                value={composenewmail.subject}
+                name="Email"
+                value={createaccount.Email}
                 onChange={this.onChange}
-                placeholder="subject" />
+                placeholder="Email" />
 
             </div>
-            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.message})}   data-validate={errors.message}>
+            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.Password})}   data-validate={errors.Password}>
             <textarea
-                className="mailinputmessage"
+                className="mailinput"
                 type="text"
-                name="message"
-                value={composenewmail.message}
+                name="Password"
+                value={createaccount.Password}
                 onChange={this.onChange}
-                placeholder="message" />
+                placeholder="Password" />
+                <span className="symbol-input100">
+                <i className="fa fa-commenting-o" aria-hidden="true"></i>
+                </span>
+            </div>
+            <div className={classnames('wrap-input100 validate-input', { "alert-validate":errors.ConfirmPassword})}   data-validate={errors.ConfirmPassword}>
+            <textarea
+                className="mailinput"
+                type="text"
+                name="ConfirmPassword"
+                value={createaccount.ConfirmPassword}
+                onChange={this.onChange}
+                placeholder="ConfirmPassword" />
                 <span className="symbol-input100">
                 <i className="fa fa-commenting-o" aria-hidden="true"></i>
                 </span>
             </div>
             <div className="btn-row">
 
-                <button className="btn-primary" onClick={this.onSubmit}>Submit</button>
+                <button className="btn-primary" onClick={!isUpdate?this.onSubmit:this.onUpdateUser}>{isUpdate?"Update":"Submit"}</button>
                 <button className="btn-cancel" onClick={this.close}>Cancel</button>
            </div>
             </div>
         }
 
-        {!showcompose &&
+        {!showupdate &&
         <table className="mailview" >
             <thead>
                 <tr>
-                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"20%"}}>{showinbox?"From":"To"}</th>
-                    <th style={{color:'white', backgroundColor:'#4ecdc4',width: "15%"}}>Subject</th>
-                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"35%"}}>Message</th>
-                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"25%"}}>Date</th>
-                    {showinbox && <th style={{color:'white', backgroundColor:'#4ecdc4',width:"5%"}}>Action</th>}
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"15%"}}>UserName</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"35%"}}>Email</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"15%"}}>Password</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"15%"}}>Action</th>
+                    <th style={{color:'white', backgroundColor:'#4ecdc4',width:"15%"}}>Action</th>
                     
                 </tr>
             </thead>
-            {showinbox &&
+            {showuserslist &&
             <tbody>
-                {inboxitemslist}
+                {allusers}
             </tbody>
             }
-            {showsentitems &&
+            {showdeletedusers &&
                 <tbody>
-                    {sentitemslist}
+                    {DeletedUsers}
                 </tbody>
             }           
         </table>

@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import DefaultLayout from '../common/DefaultLayout'
 
 import classnames from 'classnames';
-import alertify from 'alertifyjs';
+
 import "../LoginPage/alertifystyling.scss"
 
+import {browserHistory} from 'react-router';
+import alertify from 'alertifyjs';
+import "../LoginPage/alertifystyling.scss"
 
 class Homepage extends Component {
     constructor(props) {
@@ -116,6 +119,11 @@ openSentMail = () =>{
     })
 }
 
+switchApp = () =>{
+    alertify.notify("Choose Your Application...", 'success', 5);
+    browserHistory.push('/Chooseurapp')
+}
+
 onChange = (e)=>{
     
     let errors = Object.assign({}, this.state.errors);
@@ -186,6 +194,7 @@ console.log(this.state)
                 <button className="compose" onClick = {this.openComposeMail}>Compose</button>
                 <button className="inbox" onClick = {this.openInboxMail}>Inbox</button>
                 <button className="sent" onClick = {this.openSentMail}>Sent</button>
+                <button className="switch" onClick = {this.switchApp}>Switch App</button>
                
             </div>
         <div id="page-wrap">

@@ -152,6 +152,12 @@ button {
     font-size: medium;
     background-color:#FF33F0;
 }
+.switch{
+    font-family: cursive;
+    font-weight: bolder;
+    font-size: medium;
+    background-color:rgb(51, 231, 255);
+}
 .inbox{
     font-family: cursive;
     font-weight: bolder;
@@ -165,6 +171,9 @@ button {
     color: #fff;
   }
   .inbox:hover {
+    color: #fff;
+  }
+  .switch:hover {
     color: #fff;
   }
 

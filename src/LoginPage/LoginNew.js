@@ -29,7 +29,8 @@ class LogInPage extends React.Component {
           Name:"",
           Email:"",
           Password:"",
-          ConfirmPassword:""
+          ConfirmPassword:"",
+          isDeleted:false,
       },
       errors: {},
       showStore: false,
@@ -226,7 +227,7 @@ class LogInPage extends React.Component {
    let that = this;
     e.preventDefault();
     let errors = {};
-    let createaccount = this.state.createaccount
+    let createaccount = this.state.createaccount;
     if (createaccount.Name === '') errors.Name = "Name can't be empty";
     if (createaccount.Email.trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
         errors.Email = "Valid email is required: ex@abc.xyz";
@@ -363,7 +364,7 @@ class LogInPage extends React.Component {
               </form>
 
             </div>
-            <div className="panel-bottom"><span>Test Project @ SpiceBlue</span></div>
+            <div className="panel-bottom"><span>Test Project @ HUBINO</span></div>
 
           </div>}
         {showContactus == true && showResetpassword == false &&
@@ -453,7 +454,7 @@ class LogInPage extends React.Component {
                 </div>
               </form>
             </div>
-            <div className="panel-bottom"><span>Test Project @ SpiceBlue</span></div>
+            <div className="panel-bottom"><span>Test Project @ HUBINO</span></div>
           </div>
         }
         {showContactus == false && showResetpassword == true &&
@@ -504,7 +505,7 @@ class LogInPage extends React.Component {
                 </div>
               </form>
             </div>
-            <div className="panel-bottom"><span>Test Project @ SpiceBlue</span></div>
+            <div className="panel-bottom"><span>Test Project @ HUBINO</span></div>
           </div>
         }
       </div>

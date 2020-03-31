@@ -38,11 +38,13 @@ showList = () =>{
       let Userslist = this.state.Userslist
       let that = this;
       let userList = Userslist.map(function(user,i){
+        if(user.Name != ""){
           return(
             <ul className="dropdown-menu" role="menu">
             <li><Link to={`/Homepage`} onClick={() =>that.UpdateUser(user.Email)}><i className="fa fa-sign-out" aria-hidden="true"></i>{user.Name} </Link></li>
         </ul>
           )
+        }
       })
     return (
       <header className="main__header">
