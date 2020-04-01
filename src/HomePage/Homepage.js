@@ -6,7 +6,11 @@ import alertify from 'alertifyjs';
 import axios from 'axios'
 import "../LoginPage/alertifystyling.scss"
 
+import 'rc-datepicker/lib/style.css';
 
+import { DatePicker, DatePickerInput } from 'rc-datepicker';
+
+const date = Date()
 ///// Declaring Static URL and Headers with API KEY.
 
 const API_URL = 'https://api.close.com';
@@ -24,6 +28,8 @@ class Homepage extends Component {
       super(props);
       this.state = {
         Allemails:[],
+        RemaindTime: date,
+        ischecked:false,
         composenewmail:{
             from:"",
             to:"",
@@ -51,8 +57,18 @@ componentDidMount () {
 
     //// When component renders Here we will call a function to get the Emails list from SERVER
 
-    this.getAllEmails();
+    //this.getAllEmails();
 }
+onchangeCheckbox = (event) =>{
+   
+    let ischecked = event.target.checked
+    this.setState
+    ({
+        ischecked:ischecked        
+    });
+}
+
+
     
 updatestate = () =>{
     let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails"))
@@ -216,6 +232,14 @@ onChange = (e)=>{
     this.setState({composenewmail:replyMaildata})
     this.openComposeMail();
   }
+
+  onChangedate = (jsDate, dateString) => {
+
+      console.log(jsDate)
+      console.log(dateString)
+  }
+
+
 render(){
 console.log(this.state)
 
@@ -307,9 +331,30 @@ console.log(this.state)
                 <i className="fa fa-commenting-o" aria-hidden="true"></i>
                 </span>
             </div>
+
+        {/* Date picker For Remainder */}
+
+
+
+            <div className="dateblock">
+                <input id="checkid2" type="checkbox" value="test"  onClick ={this.onchangeCheckbox}/>
+                <label for="checkid2">If no Reply In </label>
+
+               
+            </div>
+            <div>
+                <DatePickerInput
+                    onChange={this.onChangedate}
+                    value={this.state.RemaindTime}
+                    className='my-custom-datepicker-component'
+                    disabled={!this.state.ischecked}
+                />
+
+            </div>
+         
             <div className="btn-row">
 
-                <button className="btn-primary" onClick={this.onSubmitemail}>Submit</button>
+                <button className="btn-primary" onClick={this.onSubmit}>Submit</button>
                 <button className="btn-cancel" onClick={this.close}>Cancel</button>
            </div>
             </div>
