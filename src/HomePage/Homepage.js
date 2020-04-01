@@ -69,6 +69,17 @@ onchangeCheckbox = (event) =>{
 }
 
 
+//// we need to convert this intoDD/MM/YYYY format  for that 
+//we can acheive by javascript function or we can use Moment.js integration
+
+onChangedate = (jsDate) => {
+console.log(jsDate)
+    
+// this.setState({
+//     RemaindTime:jsDate
+// })
+}
+
     
 updatestate = () =>{
     let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails"))
@@ -233,12 +244,7 @@ onChange = (e)=>{
     this.openComposeMail();
   }
 
-  onChangedate = (jsDate, dateString) => {
-
-      console.log(jsDate)
-      console.log(dateString)
-  }
-
+  
 
 render(){
 console.log(this.state)
