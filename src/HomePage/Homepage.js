@@ -6,11 +6,16 @@ import alertify from 'alertifyjs';
 import axios from 'axios'
 import "../LoginPage/alertifystyling.scss"
 
+
+///// Declaring Static URL and Headers with API KEY.
+
 const API_URL = 'https://api.close.com';
 const headers = {
     'Content-Type': 'application/json',
     'api_key': 'api_45gYXpT0EZ8N6bXU8aMqxg.6gk65Pw4QohT18xx2NF3Yi'
   }
+
+
 
 
 
@@ -42,8 +47,11 @@ componentDidMount () {
     let existedmails = JSON.parse(window.sessionStorage.getItem("Allemails" || "[]"))
     Allemails = existedmails;
     this.setState({currentuser:currentuser,composenewmail:newmail,Allemails:Allemails})
-   this.updatestate();
-   this.getAllEmails();
+    this.updatestate();
+
+    //// When component renders Here we will call a function to get the Emails list from SERVER
+
+    this.getAllEmails();
 }
     
 updatestate = () =>{
@@ -60,52 +68,62 @@ logout = () =>{
 }
 
 
-
+////Here we will call API to get All Emails for the User
+/// In request we need to pass Userid since we dont developed it completely i tried passing static ID ie 1234
 getAllEmails = () =>{
-    let that = this;
-          
-    var reqQuery =
-    {
-        
-      
-    }
+    
+    var reqQuery ={}
     const url = `${API_URL}/api/v1/email_template/1234/json`;
-      axios.get(url,reqQuery,{headers:headers})
+
+    axios.get(url,reqQuery,{headers:headers})
       .then((response) => {
-
-            
         console.log(response)
-    })
-  
 
+        //// After getting Response from API Email our state data is updated with responsedata by setState;
+        let Allemails = this.state.Allemails;
+        Allemails = response;
+        this.setState({
+            Allemails:Allemails
+        });
+    })
 }
+
+
+//// To submit Email through API
 
 
  onSubmitemail = () =>{
          let that = this;
           
-          var reqQuery =
-          {
-              
-                "name": "inbound 1",
-                "subject": "test inbound subject",
-                "body": "test inbound body of an email.",
-                "is_shared": false
-            
-          }
+          var reqQuery ={};
+          let Newmail = that.state.composenewmail;
+//// Building Req for Api as per documentation, we can change the compose mailobject in state with thesame values of req query to create email
+//// here i wrote it before thisapi integration i just build new req object with data assigned from our state object
+
+
+          reqQuery["name"] = Newmail.to;
+          reqQuery["subject"] = Newmail.subject;
+          reqQuery["body"] = Newmail.message;
+          reqQuery["is_shared"] = false;
+          console.log(JSON.stringify(reqQuery))
+
           const url = `${API_URL}/api/v1/email_template/json`;
-            axios.post(url,reqQuery,{headers:headers})
+
+          axios.post(url,reqQuery,{headers:headers})
             .then((response) => {
 
-            
+                //  if we have any specifuc api to get list of sent mails we will need to call back after getting succes response
+                // if we dont have that api and need to manage the all mails based on condition by checking any property from email object we need to store the sent email in our state or Local storage as per need of Our application
+                
                 console.log(response)
-            })
+            });
         
         }
 
 
 
 
+//// Without API calling We are storing email data in session storage
 
 onSubmit = () =>{
     let newmail = this.state.composenewmail
@@ -203,6 +221,12 @@ console.log(this.state)
 
     let {composenewmail,showcompose,showinbox,showsentitems,errors,Allemails,currentuser} = this.state;
    let that = this;
+
+//// If we have specific apisto get inbox and sent mails seperately we can define two variables with sentmails and inbox mails as array in state
+//// As samewe can get those arrays of emails and return the data as we requiresd to show in UI
+
+//// present im filtering all emails into sent and inbox by checking current user email with the from/to address in email data respectively
+
     let inboxitemslist = Allemails.map(function(o,i){
         if(o.to == currentuser  && o.to !== ""){
             return(
