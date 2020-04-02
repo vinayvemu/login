@@ -253,6 +253,12 @@ onQuickbuttonClick = (event) => {
     console.log(event.target)
     let updatetitle = event.target.name;
     let updatevalue = event.target.value;
+    if(updatetitle == 'weeks'){
+         /// multiplying with 7 to convert week to days and work fine with additon of days in moment
+        updatevalue = updatevalue*7,
+        /// changing update title to days to work fine with additon of days in moment
+        updatetitle = 'days'
+    }
     let myDate = moment().add(updatevalue,updatetitle).format('DD/MM/YYYY');
 
     this.setState({
