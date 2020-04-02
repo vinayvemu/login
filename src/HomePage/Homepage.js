@@ -255,7 +255,7 @@ onQuickbuttonClick = (event) => {
     let updatevalue = event.target.value;
     if(updatetitle == 'weeks'){
          /// multiplying with 7 to convert week to days and work fine with additon of days in moment
-        updatevalue = updatevalue*7,
+        updatevalue = updatevalue*7
         /// changing update title to days to work fine with additon of days in moment
         updatetitle = 'days'
     }
