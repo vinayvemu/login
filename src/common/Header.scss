@@ -132,6 +132,11 @@ button {
     vertical-align: top;
     
 }
+button:disabled{
+    background: #96989b;
+    cursor: not-allowed;
+}
+
 .btn-primary{
     font-size: larger;
     background-color: #27ef27;

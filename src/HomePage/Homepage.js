@@ -3,14 +3,15 @@ import DefaultLayout from '../common/DefaultLayout'
 
 import classnames from 'classnames';
 import alertify from 'alertifyjs';
-import axios from 'axios'
+import axios from 'axios';
+import moment from 'moment';
 import "../LoginPage/alertifystyling.scss"
 
 import 'rc-datepicker/lib/style.css';
 
 import { DatePicker, DatePickerInput } from 'rc-datepicker';
 
-const date = Date()
+const date = moment().format("DD/MM/YYYY")
 ///// Declaring Static URL and Headers with API KEY.
 
 const API_URL = 'https://api.close.com';
@@ -73,11 +74,14 @@ onchangeCheckbox = (event) =>{
 //we can acheive by javascript function or we can use Moment.js integration
 
 onChangedate = (jsDate) => {
+
 console.log(jsDate)
+let selecteddate = moment(jsDate).format("DD/MM/YYYY")
     
-// this.setState({
-//     RemaindTime:jsDate
-// })
+this.setState({
+    RemaindTime:selecteddate
+})
+alert("you will be reminded on " + selecteddate)
 }
 
     
@@ -244,6 +248,20 @@ onChange = (e)=>{
     this.openComposeMail();
   }
 
+
+onQuickbuttonClick = (event) => {
+    console.log(event.target)
+    let updatetitle = event.target.name;
+    let updatevalue = event.target.value;
+    let myDate = moment().add(updatevalue,updatetitle).format('DD/MM/YYYY');
+
+    this.setState({
+        RemaindTime:myDate
+    });
+    alert("you will be reminded on " + myDate)
+
+}
+
   
 
 render(){
@@ -345,10 +363,22 @@ console.log(this.state)
             <div className="dateblock">
                 <input id="checkid2" type="checkbox" value="test"  onClick ={this.onchangeCheckbox}/>
                 <label for="checkid2">If no Reply In </label>
+                
+        <div className="quick">
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="months" value="1"  title="Snooze selected items for 1 month">1 month</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="months" value="2"  title="Snooze selected items for 2 months">2m</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="months" value="3"  title="Snooze selected items for 3 months">3m</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="weeks" value="1"  title="Snooze selected items for 1 week">1 week</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="weeks" value="2"  title="Snooze selected items for 2 weeks">2w</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="weeks" value="3"  title="Snooze selected items for 3 weeks">3w</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="days" value="1"  title="Snooze selected items until tomorrow">1 day</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="days" value="2"  title="Snooze selected items for 2 days">2d</button>
+             <button  disabled={!this.state.ischecked} className="quick-picks" onClick={this.onQuickbuttonClick} name="days" value="3"  title="Snooze selected items for 3 days">3d</button>
+        </div>
+        <div>
 
-               
-            </div>
-            <div>
+
+
                 <DatePickerInput
                     onChange={this.onChangedate}
                     value={this.state.RemaindTime}
@@ -357,6 +387,9 @@ console.log(this.state)
                 />
 
             </div>
+               
+            </div>
+            
          
             <div className="btn-row">
 
